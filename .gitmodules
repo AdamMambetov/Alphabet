@@ -1,3 +1,4 @@
 [submodule "Plugins/BaseGame"]
 	path = Plugins/BaseGame
 	url = https://github.com/AdamMambetov/BaseGame
+	branch = 4.23
