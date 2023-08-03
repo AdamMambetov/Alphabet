@@ -1,0 +1,22 @@
+# Ignore all files by default, but scan all directories.
+*
+!*/
+
+# Do not ignore git files in the root of the repo.
+!/.git*
+
+# Do not ignore current project's `.uproject`.
+!/*.uproject
+
+# Do not ignore current project's `.clang-format`.
+!/*.clang-format
+
+# Do not ignore source, config, plugins and raw content dirs.
+!/Source/**
+!/Config/**
+!/Plugins/**
+!/RawContent/**/*
+
+# Only allow .uasset and .umap files from /Content dir.
+!/Content/**/*.uasset
+!/Content/**/*.umap

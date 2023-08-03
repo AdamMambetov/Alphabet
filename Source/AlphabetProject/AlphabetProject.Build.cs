@@ -1,0 +1,29 @@
+// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class AlphabetProject : ModuleRules
+{
+    public AlphabetProject(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicIncludePaths.AddRange(new string[] { "" });
+
+        PrivateIncludePaths.AddRange(new string[] { });
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "BaseGame" });
+
+        PrivateDependencyModuleNames.AddRange(new string[] {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "AIModule",
+            "Slate",
+            "SlateCore",
+            "GameplayTags",
+        });
+
+    }
+}

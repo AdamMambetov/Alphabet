@@ -1,0 +1,16 @@
+# Unreal Engine file types.
+*.uasset binary
+*.umap binary
+
+# Raw Content file types.
+*.fbx binary
+*.3ds binary
+*.psd binary
+*.png binary
+*.mp3 binary
+*.wav binary
+*.xcf binary
+*.jpg binary
+
+# Anything in `/RawContent` dir.
+/RawContent/**/* binary
