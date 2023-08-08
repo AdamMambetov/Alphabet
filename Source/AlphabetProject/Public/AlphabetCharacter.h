@@ -56,13 +56,10 @@ protected:
         int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
     UFUNCTION()
-    virtual void OnAttackStart(FAttackInfo AttackInfo);
+    virtual void OnDamageStart();
 
     UFUNCTION()
-    virtual void OnAttackEnd(FAttackInfo AttackInfo);
-
-    UFUNCTION()
-    virtual void OnResetCombo();
+    virtual void OnDamageEnd();
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Jump"))
     void OnJumpBlueprint();

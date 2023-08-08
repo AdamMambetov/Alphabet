@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCombo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageEnd);
 
 UCLASS()
 class ALPHABETPROJECT_API UAlphabetAttackComponent : public UAttackComponent
@@ -55,6 +57,12 @@ public:
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
     FOnResetCombo OnResetCombo;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
+    FDamageStart OnDamageStart;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
+    FDamageEnd OnDamageEnd;
 
     // UAlphabetAttackComponent Dispatchers End
 
