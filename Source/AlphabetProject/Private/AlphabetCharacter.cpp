@@ -53,9 +53,8 @@ void AAlphabetCharacter::BeginPlay()
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AAlphabetCharacter::OnWeaponCollisionBeginOverlap);
 
-    AttackComponent->OnAttackStart.AddDynamic(this, &AAlphabetCharacter::OnAttackStart);
-    AttackComponent->OnAttackEnd.AddDynamic(this, &AAlphabetCharacter::OnAttackEnd);
-    AttackComponent->OnResetCombo.AddDynamic(this, &AAlphabetCharacter::OnResetCombo);
+    AttackComponent->OnDamageStart.AddDynamic(this, &AAlphabetCharacter::OnDamageStart);
+    AttackComponent->OnDamageEnd.AddDynamic(this, &AAlphabetCharacter::OnDamageEnd);
 }
 
 void AAlphabetCharacter::Tick(float DeltaSeconds)
@@ -147,17 +146,12 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AAlphabetCharacter::OnAttackStart(FAttackInfo AttackInfo)
+void AAlphabetCharacter::OnDamageStart()
 {
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void AAlphabetCharacter::OnAttackEnd(FAttackInfo AttackInfo)
-{
-    WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void AAlphabetCharacter::OnResetCombo()
+void AAlphabetCharacter::OnDamageEnd()
 {
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
