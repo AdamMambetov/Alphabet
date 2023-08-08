@@ -11,6 +11,7 @@
 class UAlphabetStatsComponent;
 class UAlphabetAttackComponent;
 class UBoxComponent;
+class UWidgetComponent;
 
 UCLASS(Config = Game)
 class AAlphabetCharacter : public ABaseCharacter
@@ -39,6 +40,9 @@ public:
 
 protected:
     // AAlphabetCharacter Functions Begin
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "Init Health Widget"))
+    void InitHealthWidgetBlueprint();
 
     virtual void OnJump();
 
@@ -91,6 +95,10 @@ private:
     UBoxComponent* WeaponCollision;
 
     float Direction = 0.f;
+
+protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+    UWidgetComponent* HealthWidget;
 
     // AAlphabetCharacter Variables End
 };
