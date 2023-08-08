@@ -23,6 +23,7 @@ public class AlphabetProject : ModuleRules
             "Slate",
             "SlateCore",
             "GameplayTags",
+            "UMG",
         });
 
     }

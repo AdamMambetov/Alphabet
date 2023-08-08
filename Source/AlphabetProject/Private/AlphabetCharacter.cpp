@@ -7,8 +7,11 @@
 #include "Components/InputComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AAlphabetCharacter::AAlphabetCharacter()
 {
@@ -42,6 +45,12 @@ AAlphabetCharacter::AAlphabetCharacter()
     WeaponCollision->SetupAttachment(GetMesh(), TEXT("RightAttackSocket"));
     WeaponCollision->InitBoxExtent(FVector(50.f));
     WeaponCollision->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
+
+    // Configure Health Widget
+    HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Widget"));
+    HealthWidget->SetupAttachment(GetRootComponent());
+    HealthWidget->SetWidgetSpace(EWidgetSpace::World);
+    HealthWidget->SetDrawSize(FVector2D(100.f, 10.f));
 }
 
 void AAlphabetCharacter::BeginPlay()
@@ -55,6 +64,8 @@ void AAlphabetCharacter::BeginPlay()
 
     AttackComponent->OnDamageStart.AddDynamic(this, &AAlphabetCharacter::OnDamageStart);
     AttackComponent->OnDamageEnd.AddDynamic(this, &AAlphabetCharacter::OnDamageEnd);
+
+    InitHealthWidgetBlueprint();
 }
 
 void AAlphabetCharacter::Tick(float DeltaSeconds)
@@ -76,6 +87,15 @@ void AAlphabetCharacter::Tick(float DeltaSeconds)
     else
     {
         Direction = GetCharacterMovement()->Velocity.Y / GetCharacterMovement()->GetMaxSpeed() * -1.f;
+    }
+
+    if (IsValid(HealthWidget))
+    {
+        FVector L_Location = GetActorLocation() + FVector(0.f, 0.f, 80.f);
+        FRotator L_Rotation = UKismetMathLibrary::FindLookAtRotation(
+            HealthWidget->GetComponentLocation(), UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation());
+
+        HealthWidget->SetWorldLocationAndRotation(L_Location, L_Rotation);
     }
 }
 
