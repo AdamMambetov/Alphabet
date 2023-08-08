@@ -3,6 +3,8 @@
 #include "AlphabetAttackComponent.h"
 #include "Core/Defaults.h"
 #include "GameFramework/Character.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
 
 UAlphabetAttackComponent::UAlphabetAttackComponent() {}
 
