@@ -23,6 +23,8 @@ public:
 
     virtual void RestartPlayer(AController* NewPlayer);
 
+    APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot);
+
     // AGameModeBase End
 
 public:
@@ -40,6 +42,13 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | GameMode", meta = (DisplayName = "On Player Destroyed"))
     void OnPlayerDestroyedBlueprint(AActor* DestroyedActor);
+
+    UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Alphabet | GameMode")
+    TSubclassOf<APawn> SelectPlayerPawnClass();
+    TSubclassOf<APawn> SelectPlayerPawnClass_Implementation();
+
+private:
+    FTimerHandle RestartPlayerHandle;
 
     // AGameModeBase Functions End
 };

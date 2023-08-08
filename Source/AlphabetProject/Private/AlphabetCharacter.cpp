@@ -33,6 +33,8 @@ AAlphabetCharacter::AAlphabetCharacter()
     GetCharacterMovement()->MaxWalkSpeed = 600.f;
     GetCharacterMovement()->MaxFlySpeed = 600.f;
 
+    GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
     // Configure stats
     StatsComponent = CreateDefaultSubobject<UAlphabetStatsComponent>(TEXT("Stats Component"));
 
