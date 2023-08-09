@@ -161,7 +161,8 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
     bool bFromSweep,                                    //
     const FHitResult& SweepResult)                      //
 {
-    if (OtherActor == this) return;
+    
+    if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
