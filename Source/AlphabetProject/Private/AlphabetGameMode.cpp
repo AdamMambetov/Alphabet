@@ -9,7 +9,7 @@
 
 AAlphabetGameMode::AAlphabetGameMode()
 {
-    // GameStateClass
+    // GameStateClass 
     PlayerControllerClass = AAlphabetPlayerController::StaticClass();
     PlayerStateClass = AAlphabetPlayerState::StaticClass();
     DefaultPawnClass = AAlphabetCharacter::StaticClass();
@@ -18,13 +18,13 @@ AAlphabetGameMode::AAlphabetGameMode()
 void AAlphabetGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
-    RestartPlayer(NewPlayer);
+    //RestartPlayer(NewPlayer);
 }
 
 void AAlphabetGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
-    NewPlayer->GetPawn()->OnDestroyed.AddDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
+    //NewPlayer->GetPawn()->OnDestroyed.AddDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
 }
 
 void AAlphabetGameMode::PawnDead_Implementation(class APlayerState* PlayerState)
