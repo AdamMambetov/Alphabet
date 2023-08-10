@@ -25,6 +25,8 @@ public:
 
     APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot);
 
+    virtual void StartToLeaveMap() override;
+
     // AGameModeBase End
 
 public:

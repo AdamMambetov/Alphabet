@@ -86,3 +86,10 @@ void AAlphabetGameMode::OnPlayerDestroyed(AActor* DestroyedActor)
     RestartPlayer(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     OnPlayerDestroyedBlueprint(DestroyedActor);
 }
+
+void AAlphabetGameMode::StartToLeaveMap()
+{
+    UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->OnDestroyed.RemoveDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
+    GetWorldTimerManager().ClearTimer(RestartPlayerHandle);
+    Super::StartToLeaveMap();
+}
