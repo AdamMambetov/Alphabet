@@ -24,6 +24,7 @@ public class AlphabetProject : ModuleRules
             "SlateCore",
             "GameplayTags",
             "UMG",
+            "NavigationSystem",
         });
 
     }

@@ -2,10 +2,10 @@
 
 #include "Engine/DataTable.h"
 #include "GameplayTagContainer.h"
+#include "AlphabetCharacter.h"
 #include "CharacterInfo.generated.h"
 
 class UTexture2D;
-class AAlphabetCharacter;
 
 USTRUCT(BlueprintType)
 struct FCharacterInfo : public FTableRowBase

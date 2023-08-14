@@ -53,6 +53,8 @@ AAlphabetCharacter::AAlphabetCharacter()
     HealthWidget->SetupAttachment(GetRootComponent());
     HealthWidget->SetWidgetSpace(EWidgetSpace::World);
     HealthWidget->SetDrawSize(FVector2D(100.f, 10.f));
+
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AAlphabetCharacter::BeginPlay()
