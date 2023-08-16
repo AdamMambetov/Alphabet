@@ -12,6 +12,7 @@
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "AlphabetGameMode.h"
 
 AAlphabetCharacter::AAlphabetCharacter()
 {
@@ -101,6 +102,14 @@ void AAlphabetCharacter::Tick(float DeltaSeconds)
 
         HealthWidget->SetWorldLocationAndRotation(L_Location, L_Rotation);
     }
+}
+
+void AAlphabetCharacter::Destroyed()
+{
+    auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+    Cast<AAlphabetGameMode>(GameMode)->Execute_PawnDead(GameMode, GetPlayerState());
+    
+    Super::Destroyed();
 }
 
 void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

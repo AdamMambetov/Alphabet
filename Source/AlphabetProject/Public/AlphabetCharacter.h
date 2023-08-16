@@ -29,6 +29,8 @@ public:
 
     virtual void Tick(float DeltaSeconds) override;
 
+    virtual void Destroyed() override;
+
     // AActor End
 
 public:
