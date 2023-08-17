@@ -9,6 +9,8 @@
 #include "ConstructorHelpers.h"
 #include "Engine/DataTable.h"
 #include "CharacterInfo.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AAlphabetNpcSpawner::AAlphabetNpcSpawner()
 {
@@ -56,20 +58,55 @@ void AAlphabetNpcSpawner::SpawnNpc()
     const FTransform L_SpawnTransform{FRotator::ZeroRotator, L_ResultLocation.Location};
     const auto L_CollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-    AActor* L_SpawnedNpc = GetWorld()->SpawnActorDeferred<AActor>(SelectNpcClass(), L_SpawnTransform, nullptr, //
+    auto L_SpawnedNpc = GetWorld()->SpawnActorDeferred<APawn>(SelectNpcClass(), L_SpawnTransform, nullptr, //
         nullptr, L_CollisionHandlingMethod);
     UGameplayStatics::FinishSpawningActor(L_SpawnedNpc, L_SpawnTransform);
 
     L_SpawnedNpc->OnDestroyed.AddDynamic(this, &AAlphabetNpcSpawner::OnNpcDestroy);
 
     SpawnedNpcs.Add(L_SpawnedNpc);
+    if (!GetWorldTimerManager().IsTimerActive(InitNpcTimerHandle))
+    {
+        GetWorldTimerManager().SetTimer(
+            InitNpcTimerHandle,
+            [this]()
+            {
+                bool InitSuccess = true;
+                for (auto L_SpawnedNpc : SpawnedNpcs)
+                {
+                    if (!IsValid(L_SpawnedNpc->GetController()))
+                    {
+                        InitSuccess = false;
+                        return;
+                    }
+
+                    auto AiController = Cast<AAIController>(L_SpawnedNpc->GetController());
+                    if (!IsValid(AiController))
+                    {
+                        InitSuccess = false;
+                        return;
+                    }
+
+                    if (!IsValid(AiController->GetBlackboardComponent()))
+                    {
+                        InitSuccess = false;
+                        return;
+                    }
+                    auto Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+                    if (AiController->GetBlackboardComponent()->GetValueAsObject(TEXT("EnemyActor")) != Player)
+                        AiController->GetBlackboardComponent()->SetValueAsObject(TEXT("EnemyActor"), Player);
+                }
+                if (InitSuccess) GetWorldTimerManager().ClearTimer(InitNpcTimerHandle);
+            },
+            0.1f, true);
+    }
 }
 
 void AAlphabetNpcSpawner::ResetSpawner()
 {
     if (SpawnedNpcs.Num() != 0)
     {
-        for (int32 i = SpawnedNpcs.Num()-1; i != -1; --i)
+        for (int32 i = SpawnedNpcs.Num() - 1; i != -1; --i)
         {
             SpawnedNpcs[i]->Destroy();
         }
@@ -98,5 +135,5 @@ UClass* AAlphabetNpcSpawner::SelectNpcClass()
 
 void AAlphabetNpcSpawner::OnNpcDestroy(AActor* DestroyedNpc)
 {
-    SpawnedNpcs.Remove(DestroyedNpc);
+    SpawnedNpcs.Remove(Cast<APawn>(DestroyedNpc));
 }

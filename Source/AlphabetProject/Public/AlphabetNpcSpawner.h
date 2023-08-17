@@ -69,7 +69,7 @@ private:
     float SpawnRadius = 500.f;
 
     UPROPERTY(BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
-    TArray<AActor*> SpawnedNpcs;
+    TArray<APawn*> SpawnedNpcs;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
     int32 MinAmountOfSpawnNpc;
@@ -79,6 +79,9 @@ private:
 
     UPROPERTY()
     FTimerHandle SpawnTimerHandle;
+
+    UPROPERTY()
+    FTimerHandle InitNpcTimerHandle;
 
     UPROPERTY()
     int32 NpcToSpawnCount;
