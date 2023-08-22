@@ -19,13 +19,13 @@ public:
 public:
     // AGameModeBase Begin
 
-    virtual void PostLogin(APlayerController* NewPlayer) override;
-
     virtual void RestartPlayer(AController* NewPlayer);
 
     APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot);
 
-    virtual void StartToLeaveMap() override;
+    bool PlayerCanRestart_Implementation(APlayerController* Player);
+
+    void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer);
 
     // AGameModeBase End
 
@@ -39,18 +39,16 @@ public:
 protected:
     // AGameModeBase Functions Begin
 
-    UFUNCTION()
-    virtual void OnPlayerDestroyed(AActor* DestroyedActor);
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | GameMode", meta = (DisplayName = "On Player Destroyed"))
-    void OnPlayerDestroyedBlueprint(AActor* DestroyedActor);
-
     UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Alphabet | GameMode")
     TSubclassOf<APawn> SelectPlayerPawnClass();
     TSubclassOf<APawn> SelectPlayerPawnClass_Implementation();
 
-private:
-    FTimerHandle RestartPlayerHandle;
-
     // AGameModeBase Functions End
+
+private:
+    // AGameModeBase Variables Begin
+
+    bool bIsPlayerSpawn = false;
+
+    // AGameModeBase Variables End
 };

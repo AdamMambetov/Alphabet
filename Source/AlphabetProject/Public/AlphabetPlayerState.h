@@ -57,6 +57,12 @@ public:
     UFUNCTION(BlueprintGetter)
     TArray<FStatInfo> GetPawnStats() { return PawnStats; }
 
+    UFUNCTION(BlueprintGetter)
+    int32 GetLives() const { return Lives; }
+
+    UFUNCTION(BlueprintSetter)
+    void SetLives(int32 NewLives) { Lives = NewLives; }
+
     // AAlphabetPlayerState Functions End
 
 private:
@@ -65,6 +71,10 @@ private:
     UPROPERTY(VisibleDefaultsOnly, BlueprintGetter = GetPawnStats, Category = "Alphabet | PlayerState", //
         meta = (AllowPrivateAccess = "true"))
     TArray<FStatInfo> PawnStats;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetLives, BlueprintSetter = SetLives, Category = "Alphabet | PlayerState", //
+        meta = (AllowPrivateAccess = "true", ClampMin = 1, UIMin = 1))
+    int32 Lives = 1;
 
     // AAlphabetPlayerState Variables End
 };

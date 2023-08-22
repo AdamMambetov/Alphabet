@@ -104,14 +104,6 @@ void AAlphabetCharacter::Tick(float DeltaSeconds)
     }
 }
 
-void AAlphabetCharacter::Destroyed()
-{
-    auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
-    Cast<AAlphabetGameMode>(GameMode)->Execute_PawnDead(GameMode, GetPlayerState());
-    
-    Super::Destroyed();
-}
-
 void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AAlphabetCharacter::OnJump);
@@ -160,7 +152,11 @@ void AAlphabetCharacter::OnAttack()
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)
 {
     OnStatReachedZeroBlueprint(StatInfo);
-    if (StatInfo.Id == UDefaults::MakeTag(TEXT("Stat.Health")))
+
+    auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+    Cast<AAlphabetGameMode>(GameMode)->Execute_PawnDead(GameMode, GetPlayerState());
+
+    if (StatInfo.Id == UDefaults::MakeTag("Stat.Health"))
     {
         Destroy();
     }
@@ -174,7 +170,7 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
     bool bFromSweep,                                    //
     const FHitResult& SweepResult)                      //
 {
-    
+
     if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

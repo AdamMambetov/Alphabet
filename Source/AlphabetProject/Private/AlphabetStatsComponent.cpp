@@ -15,13 +15,11 @@ void UAlphabetStatsComponent::BeginPlay()
 
 void UAlphabetStatsComponent::Revive()
 {
-    if (!bDeath) return;
-
-    for (auto& Stat : Stats)
-    {
-        Stat.CurrentValue = Stat.MaxValue;
-    }
     bDeath = false;
+    FStatInfo HealthStatInfo;
+    GetStatInfo(UDefaults::MakeTag("Stat.Health"), HealthStatInfo);
+    FStatModifier Modifier("Stat.Health", HealthStatInfo.MaxValue - HealthStatInfo.CurrentValue, "StatModifier.Value.Current");
+    Server_ModifyStat(Modifier);
 }
 
 void UAlphabetStatsComponent::OnOwnerTakeAnyDamage( //

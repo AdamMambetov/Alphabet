@@ -11,6 +11,7 @@
 #include "CharacterInfo.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AlphabetPlayerController.h"
 
 AAlphabetNpcSpawner::AAlphabetNpcSpawner()
 {
@@ -32,6 +33,9 @@ void AAlphabetNpcSpawner::BeginPlay()
     NpcToSpawnCount = FMath::RandRange(MinAmountOfSpawnNpc, MaxAmountOfSpawnNpc);
 
     GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AAlphabetNpcSpawner::SpawnNpc, SpawnInterval, true, 1.f);
+
+    Cast<AAlphabetPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))
+        ->OnPossessedPawnHandler.AddDynamic(this, &AAlphabetNpcSpawner::OnPlayerRespawn);
 }
 
 void AAlphabetNpcSpawner::Tick(float DeltaSeconds)
@@ -67,38 +71,7 @@ void AAlphabetNpcSpawner::SpawnNpc()
     SpawnedNpcs.Add(L_SpawnedNpc);
     if (!GetWorldTimerManager().IsTimerActive(InitNpcTimerHandle))
     {
-        GetWorldTimerManager().SetTimer(
-            InitNpcTimerHandle,
-            [this]()
-            {
-                bool InitSuccess = true;
-                for (auto L_SpawnedNpc : SpawnedNpcs)
-                {
-                    if (!IsValid(L_SpawnedNpc->GetController()))
-                    {
-                        InitSuccess = false;
-                        return;
-                    }
-
-                    auto AiController = Cast<AAIController>(L_SpawnedNpc->GetController());
-                    if (!IsValid(AiController))
-                    {
-                        InitSuccess = false;
-                        return;
-                    }
-
-                    if (!IsValid(AiController->GetBlackboardComponent()))
-                    {
-                        InitSuccess = false;
-                        return;
-                    }
-                    auto Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-                    if (AiController->GetBlackboardComponent()->GetValueAsObject(TEXT("EnemyActor")) != Player)
-                        AiController->GetBlackboardComponent()->SetValueAsObject(TEXT("EnemyActor"), Player);
-                }
-                if (InitSuccess) GetWorldTimerManager().ClearTimer(InitNpcTimerHandle);
-            },
-            0.1f, true);
+        GetWorldTimerManager().SetTimer(InitNpcTimerHandle, this, &AAlphabetNpcSpawner::InitAllNpcs, 0.1f, true);
     }
 }
 
@@ -136,4 +109,41 @@ UClass* AAlphabetNpcSpawner::SelectNpcClass()
 void AAlphabetNpcSpawner::OnNpcDestroy(AActor* DestroyedNpc)
 {
     SpawnedNpcs.Remove(Cast<APawn>(DestroyedNpc));
+    OnNpcDestroyBlueprint(DestroyedNpc);
+}
+
+void AAlphabetNpcSpawner::OnPlayerRespawn(APawn* NewPlayer)
+{
+    InitAllNpcs();
+}
+
+void AAlphabetNpcSpawner::InitAllNpcs()
+{
+    bool L_InitSuccess = true;
+
+    for (auto L_SpawnedNpc : SpawnedNpcs)
+    {
+        if (!IsValid(L_SpawnedNpc->GetController()))
+        {
+            L_InitSuccess = false;
+            break;
+        }
+
+        auto AiController = Cast<AAIController>(L_SpawnedNpc->GetController());
+        if (!IsValid(AiController))
+        {
+            L_InitSuccess = false;
+            break;
+        }
+
+        if (!IsValid(AiController->GetBlackboardComponent()))
+        {
+            L_InitSuccess = false;
+            break;
+        }
+
+        auto Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+        AiController->GetBlackboardComponent()->SetValueAsObject(TEXT("EnemyActor"), Player);
+    }
+    if (L_InitSuccess) GetWorldTimerManager().ClearTimer(InitNpcTimerHandle);
 }

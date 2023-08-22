@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
 #include "TimerManager.h"
+#include "GameFramework/SpectatorPawn.h"
 
 AAlphabetGameMode::AAlphabetGameMode()
 {
@@ -16,36 +17,23 @@ AAlphabetGameMode::AAlphabetGameMode()
     DefaultPawnClass = AAlphabetCharacter::StaticClass();
 }
 
-void AAlphabetGameMode::PostLogin(APlayerController* NewPlayer)
-{
-    Super::PostLogin(NewPlayer);
-
-    GetWorldTimerManager().SetTimer(
-        RestartPlayerHandle,
-        [this, NewPlayer]()
-        {
-            if (!IsValid(NewPlayer->GetPawn())) return;
-
-            NewPlayer->GetPawn()->OnDestroyed.AddDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
-            GetWorldTimerManager().ClearTimer(this->RestartPlayerHandle);
-        },
-        0.1f, true);
-}
-
 void AAlphabetGameMode::RestartPlayer(AController* NewPlayer)
 {
+    if (IsValid(NewPlayer->GetPawn()))
+    {
+        auto OldPawn = NewPlayer->GetPawn();
+        NewPlayer->PawnPendingDestroy(OldPawn);
+        OldPawn->Destroy();
+    }
+
     Super::RestartPlayer(NewPlayer);
 
-    GetWorldTimerManager().SetTimer(
-        RestartPlayerHandle,
-        [this, NewPlayer]()
-        {
-            if (!IsValid(NewPlayer->GetPawn())) return;
-
-            NewPlayer->GetPawn()->OnDestroyed.AddDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
-            GetWorldTimerManager().ClearTimer(this->RestartPlayerHandle);
-        },
-        0.1f, true);
+    if (bIsPlayerSpawn)
+    {
+        auto PlayerState = NewPlayer->GetPlayerState<AAlphabetPlayerState>();
+        PlayerState->SetLives(PlayerState->GetLives() - 1);
+    }
+    bIsPlayerSpawn = true;
 }
 
 APawn* AAlphabetGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
@@ -69,27 +57,34 @@ void AAlphabetGameMode::PawnDead_Implementation(class APlayerState* PlayerState)
 {
     if (!PlayerState) return;
 
+    auto Player = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
     if (PlayerState->bIsABot)
     {
-        auto Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
         if (!Player) return;
 
-        if (IAlphabetPlayerStateInterface* Interface = Cast<IAlphabetPlayerStateInterface>(Player->GetPlayerState()))
+        if (IAlphabetPlayerStateInterface* Interface = Cast<IAlphabetPlayerStateInterface>(Player->GetPlayerState<APlayerState>()))
         {
-            Interface->Execute_SetScore(Player->GetPlayerState(), Player->GetPlayerState()->Score + 1.f);
+            Interface->Execute_SetScore(Player->GetPlayerState<APlayerState>(), Player->GetPlayerState<APlayerState>()->Score + 1.f);
         }
+    }
+    else
+    {
+        auto Spectator = GetWorld()->SpawnActor<APawn>(SpectatorClass.Get(), PlayerState->GetPawn()->GetActorTransform());
+        Player->Possess(Spectator);
+        Spectator->DisableInput(Player);
     }
 }
 
-void AAlphabetGameMode::OnPlayerDestroyed(AActor* DestroyedActor)
+bool AAlphabetGameMode::PlayerCanRestart_Implementation(APlayerController* Player)
 {
-    RestartPlayer(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-    OnPlayerDestroyedBlueprint(DestroyedActor);
+    return Player->GetPlayerState<AAlphabetPlayerState>()->GetLives() > 1;
 }
 
-void AAlphabetGameMode::StartToLeaveMap()
+void AAlphabetGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-    UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->OnDestroyed.RemoveDynamic(this, &AAlphabetGameMode::OnPlayerDestroyed);
-    GetWorldTimerManager().ClearTimer(RestartPlayerHandle);
-    Super::StartToLeaveMap();
+    if (!bStartPlayersAsSpectators && !MustSpectate(NewPlayer))
+    {
+        RestartPlayer(NewPlayer);
+    }
 }

@@ -20,6 +20,7 @@ public:
     // Default Constructor
     AAlphabetPlayerController();
 
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FOnPossessedPawn OnPossessedPawnHandler;
 
 protected:

@@ -46,9 +46,18 @@ public:
     UFUNCTION(BlueprintCallable)
     UClass* SelectNpcClass();
 
+    UFUNCTION(BlueprintCallable)
+    void InitAllNpcs();
+
 protected:
     UFUNCTION()
     virtual void OnNpcDestroy(AActor* DestroyedNpc);
+
+    UFUNCTION()
+    virtual void OnPlayerRespawn(APawn* NewPlayer);
+
+    UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Npc Destroy"))
+    void OnNpcDestroyBlueprint(AActor* DestroyedNpc);
 
     // AAlphabetNpcSpawner Functions End
 
