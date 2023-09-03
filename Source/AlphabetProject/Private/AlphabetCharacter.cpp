@@ -12,6 +12,7 @@
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "AlphabetGameMode.h"
 
 AAlphabetCharacter::AAlphabetCharacter()
 {
@@ -53,6 +54,8 @@ AAlphabetCharacter::AAlphabetCharacter()
     HealthWidget->SetupAttachment(GetRootComponent());
     HealthWidget->SetWidgetSpace(EWidgetSpace::World);
     HealthWidget->SetDrawSize(FVector2D(100.f, 10.f));
+
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AAlphabetCharacter::BeginPlay()
@@ -149,7 +152,11 @@ void AAlphabetCharacter::OnAttack()
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)
 {
     OnStatReachedZeroBlueprint(StatInfo);
-    if (StatInfo.Id == UDefaults::MakeTag(TEXT("Stat.Health")))
+
+    auto GameMode = UGameplayStatics::GetGameMode(GetWorld());
+    Cast<AAlphabetGameMode>(GameMode)->Execute_PawnDead(GameMode, GetPlayerState());
+
+    if (StatInfo.Id == UDefaults::MakeTag("Stat.Health"))
     {
         Destroy();
     }
@@ -163,7 +170,7 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
     bool bFromSweep,                                    //
     const FHitResult& SweepResult)                      //
 {
-    
+
     if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
