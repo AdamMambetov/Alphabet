@@ -3,6 +3,8 @@
 #include "AlphabetCharacter.h"
 #include "AlphabetStatsComponent.h"
 #include "AlphabetAttackComponent.h"
+#include "AlphabetGameMode.h"
+#include "AlphabetPlayerState.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/BoxComponent.h"
@@ -12,7 +14,6 @@
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "AlphabetGameMode.h"
 
 AAlphabetCharacter::AAlphabetCharacter()
 {
@@ -69,6 +70,8 @@ void AAlphabetCharacter::BeginPlay()
 
     AttackComponent->OnDamageStart.AddDynamic(this, &AAlphabetCharacter::OnDamageStart);
     AttackComponent->OnDamageEnd.AddDynamic(this, &AAlphabetCharacter::OnDamageEnd);
+    AttackComponent->OnAttackStart.AddDynamic(this, &AAlphabetCharacter::OnAttackStart);
+    AttackComponent->OnAttackEnd.AddDynamic(this, &AAlphabetCharacter::OnAttackEnd);
 
     InitHealthWidgetBlueprint();
 }
@@ -127,6 +130,12 @@ void AAlphabetCharacter::OnStopJumping()
 
 void AAlphabetCharacter::OnMoveRight(float AxisValue)
 {
+    OnMoveRightBlueprint(AxisValue);
+
+    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(PlayerState)) return;
+    if (!PlayerState->GetMovement()) return;
+
     const FVector WorldDirection = FVector(0.f, -1.f, 0.f);
     AddMovementInput(WorldDirection, AxisValue);
 
@@ -138,8 +147,6 @@ void AAlphabetCharacter::OnMoveRight(float AxisValue)
         AttackComponent->CollisionLocation = NewCollisionLocation;
         WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponLocationSocket);
     }
-
-    OnMoveRightBlueprint(AxisValue);
 }
 
 void AAlphabetCharacter::OnAttack()
@@ -173,6 +180,8 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
 
     if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
+    FVector L_Force{0.f, GetActorLocation().Y - OtherActor->GetActorLocation().Y > 0.f ? -5000000.f : 5000000.f, 1000000.f};
+    Cast<ACharacter>(OtherActor)->GetCharacterMovement()->AddForce(L_Force);
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -184,4 +193,19 @@ void AAlphabetCharacter::OnDamageStart()
 void AAlphabetCharacter::OnDamageEnd()
 {
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AAlphabetCharacter::OnAttackStart(FAttackInfo AttackInfo)
+{
+    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(PlayerState)) return;
+    PlayerState->SetMovement(false);
+    GetCharacterMovement()->Velocity = FVector(0.f);
+}
+
+void AAlphabetCharacter::OnAttackEnd(FAttackInfo AttackInfo)
+{
+    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(PlayerState)) return;
+    PlayerState->SetMovement(true);
 }
