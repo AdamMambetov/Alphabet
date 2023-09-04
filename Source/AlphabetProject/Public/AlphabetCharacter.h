@@ -65,6 +65,12 @@ protected:
     UFUNCTION()
     virtual void OnDamageEnd();
 
+    UFUNCTION()
+    virtual void OnAttackStart(FAttackInfo AttackInfo);
+
+    UFUNCTION()
+    virtual void OnAttackEnd(FAttackInfo AttackInfo);
+
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Jump"))
     void OnJumpBlueprint();
 

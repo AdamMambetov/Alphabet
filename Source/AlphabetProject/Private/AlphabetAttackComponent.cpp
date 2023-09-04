@@ -79,8 +79,6 @@ void UAlphabetAttackComponent::OnSaveComboEvent()
 
 void UAlphabetAttackComponent::OnResetComboEvent()
 {
-    AttackState = EAttackState::None;
-    CurrentAttackInfo = FAttackInfo();
-    ComboCount = 0;
+    OnAttackEnd.Broadcast(CurrentAttackInfo);
     NewAttackId = FGameplayTag::EmptyTag;
 }

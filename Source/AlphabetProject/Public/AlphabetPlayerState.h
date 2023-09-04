@@ -63,6 +63,12 @@ public:
     UFUNCTION(BlueprintSetter)
     void SetLives(int32 NewLives) { Lives = NewLives; }
 
+    UFUNCTION(BlueprintGetter)
+    bool GetMovement() const { return bMovement; }
+
+    UFUNCTION(BlueprintSetter)
+    void SetMovement(bool NewMovement) { bMovement = NewMovement; }
+
     // AAlphabetPlayerState Functions End
 
 private:
@@ -75,6 +81,10 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetLives, BlueprintSetter = SetLives, Category = "Alphabet | PlayerState", //
         meta = (AllowPrivateAccess = "true", ClampMin = 1, UIMin = 1))
     int32 Lives = 1;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMovement, BlueprintSetter = SetMovement, Category = "Alphabet | PlayerState", //
+        meta = (AllowPrivateAccess = "true"))
+    bool bMovement = true;
 
     // AAlphabetPlayerState Variables End
 };
