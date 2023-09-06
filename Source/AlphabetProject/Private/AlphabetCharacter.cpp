@@ -112,6 +112,7 @@ void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AAlphabetCharacter::OnJump);
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AAlphabetCharacter::OnStopJumping);
     PlayerInputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AAlphabetCharacter::OnAttack);
+    PlayerInputComponent->BindAction(TEXT("Pause"), IE_Pressed, this, &AAlphabetCharacter::OnPause);
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AAlphabetCharacter::OnMoveRight);
 }
 
@@ -154,6 +155,12 @@ void AAlphabetCharacter::OnAttack()
     if (GetCharacterMovement()->IsFalling()) return;
     AttackComponent->Attack();
     OnAttackBlueprint();
+}
+
+void AAlphabetCharacter::OnPause()
+{
+    OnPauseBlueprint();
+    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap"));
 }
 
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)
