@@ -180,7 +180,7 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
 
     if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
-    FVector L_Force{0.f, GetActorLocation().Y - OtherActor->GetActorLocation().Y > 0.f ? -5000000.f : 5000000.f, 1000000.f};
+    FVector L_Force{0.f, GetActorLocation().Y - OtherActor->GetActorLocation().Y > 0.f ? -7000000.f : 7000000.f, 3000000.f};
     Cast<ACharacter>(OtherActor)->GetCharacterMovement()->AddForce(L_Force);
     WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
