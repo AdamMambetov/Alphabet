@@ -80,10 +80,10 @@ private:
     UPROPERTY(BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
     TArray<APawn*> SpawnedNpcs;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
     int32 MinAmountOfSpawnNpc;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner", meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
     int32 MaxAmountOfSpawnNpc;
 
     UPROPERTY()
