@@ -88,3 +88,9 @@ void AAlphabetGameMode::HandleStartingNewPlayer_Implementation(APlayerController
         RestartPlayer(NewPlayer);
     }
 }
+
+void AAlphabetGameMode::StartToLeaveMap()
+{
+    OnStartToLeaveMap();
+    Super::StartToLeaveMap();
+}

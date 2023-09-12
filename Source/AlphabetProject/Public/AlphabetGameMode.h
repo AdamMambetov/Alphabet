@@ -27,6 +27,8 @@ public:
 
     void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer);
 
+    virtual void StartToLeaveMap() override;
+
     // AGameModeBase End
 
 public:
@@ -42,6 +44,9 @@ protected:
     UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = "Alphabet | GameMode")
     TSubclassOf<APawn> SelectPlayerPawnClass();
     TSubclassOf<APawn> SelectPlayerPawnClass_Implementation();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | GameMode")
+    void OnStartToLeaveMap();
 
     // AGameModeBase Functions End
 
