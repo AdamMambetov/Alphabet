@@ -54,6 +54,8 @@ protected:
 
     virtual void OnPause();
 
+    virtual void OnUseAbility();
+
     UFUNCTION()
     virtual void OnStatReachedZero(FStatInfo StatInfo);
 
@@ -84,7 +86,7 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Attack"))
     void OnAttackBlueprint();
-    
+
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Pause"))
     void OnPauseBlueprint();
 
