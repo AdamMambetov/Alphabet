@@ -11,6 +11,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResetCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAbilityUse);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityUpdate, float, NewAbilityValue);
 
 UCLASS()
 class ALPHABETPROJECT_API UAlphabetAttackComponent : public UAttackComponent
@@ -25,6 +27,9 @@ protected:
 
     virtual void BeginPlay() override;
 
+public:
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
     // UActorComponent End
 
 public:
@@ -38,8 +43,14 @@ protected:
 
     // UAttackComponent End
 
-protected:
+public:
     // UAlphabetAttackComponent Functions Begin
+
+    UFUNCTION(BlueprintCallable, Category = "Alphabet | AttackComponent")
+    void UseAbility();
+
+protected:
+    void UpdateAbilityValue();
 
     UFUNCTION()
     virtual void OnSaveComboEvent();
@@ -64,6 +75,12 @@ public:
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
     FDamageEnd OnDamageEnd;
 
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
+    FAbilityUpdate OnAbilityUpdate;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
+    FAbilityUse OnAbilityUse;
+
     // UAlphabetAttackComponent Dispatchers End
 
 public:
@@ -74,6 +91,18 @@ public:
 
     UPROPERTY(EditDefaultsOnly, Category = "Alphabet | AttackComponent")
     bool bIsRandomAttack = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    bool bUseAbility = false;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    float AbilityValue = 0.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    float AbilityRechargeTime = 3.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    float AbilityUseTime = 3.f;
 
     // UAlphabetAttackComponent Variables End
 };

@@ -113,6 +113,7 @@ void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AAlphabetCharacter::OnStopJumping);
     PlayerInputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AAlphabetCharacter::OnAttack);
     PlayerInputComponent->BindAction(TEXT("Pause"), IE_Pressed, this, &AAlphabetCharacter::OnPause);
+    PlayerInputComponent->BindAction(TEXT("Ability"), IE_Pressed, this, &AAlphabetCharacter::OnUseAbility);
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AAlphabetCharacter::OnMoveRight);
 }
 
@@ -184,12 +185,12 @@ void AAlphabetCharacter::OnWeaponCollisionBeginOverlap( //
     bool bFromSweep,                                    //
     const FHitResult& SweepResult)                      //
 {
-
     if (OtherActor == this || (OtherActor->ActorHasTag(TEXT("Player")) == ActorHasTag(TEXT("Player")))) return;
     OtherActor->TakeDamage(AttackComponent->GetCurrentAttackInfo().Damage, FDamageEvent(), GetController(), this);
     FVector L_Force{0.f, GetActorLocation().Y - OtherActor->GetActorLocation().Y > 0.f ? -5000000.f : 5000000.f, 2000000.f};
     Cast<ACharacter>(OtherActor)->GetCharacterMovement()->AddForce(L_Force);
-    WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    if (!AttackComponent->bUseAbility) WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AAlphabetCharacter::OnDamageStart()
@@ -215,4 +216,9 @@ void AAlphabetCharacter::OnAttackEnd(FAttackInfo AttackInfo)
     auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
     if (!IsValid(PlayerState)) return;
     PlayerState->SetMovement(true);
+}
+
+void AAlphabetCharacter::OnUseAbility()
+{
+    AttackComponent->UseAbility();
 }

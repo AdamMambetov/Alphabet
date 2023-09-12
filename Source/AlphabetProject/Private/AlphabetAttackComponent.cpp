@@ -6,7 +6,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 
-UAlphabetAttackComponent::UAlphabetAttackComponent() {}
+UAlphabetAttackComponent::UAlphabetAttackComponent()
+{
+    PrimaryComponentTick.bCanEverTick = true;
+}
 
 void UAlphabetAttackComponent::BeginPlay()
 {
@@ -14,6 +17,13 @@ void UAlphabetAttackComponent::BeginPlay()
 
     OnSaveCombo.AddDynamic(this, &UAlphabetAttackComponent::OnSaveComboEvent);
     OnResetCombo.AddDynamic(this, &UAlphabetAttackComponent::OnResetComboEvent);
+}
+
+void UAlphabetAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    UpdateAbilityValue();
 }
 
 void UAlphabetAttackComponent::AttackById(const FGameplayTag AttackId)
@@ -81,4 +91,37 @@ void UAlphabetAttackComponent::OnResetComboEvent()
 {
     OnAttackEnd.Broadcast(CurrentAttackInfo);
     NewAttackId = FGameplayTag::EmptyTag;
+}
+
+void UAlphabetAttackComponent::UseAbility()
+{
+    if (!FMath::IsNearlyEqual(AbilityValue, 1.f) || bUseAbility) return;
+    bUseAbility = true;
+    OnAbilityUse.Broadcast();
+}
+
+void UAlphabetAttackComponent::UpdateAbilityValue()
+{
+    if (bUseAbility)
+    {
+        if (!FMath::IsNearlyEqual(AbilityValue, 0.f))
+        {
+            AbilityValue -= GetWorld()->DeltaTimeSeconds / AbilityUseTime;
+            OnAbilityUpdate.Broadcast(AbilityValue);
+        }
+        if (AbilityValue < 0.f)
+        {
+            AbilityValue = 0.f;
+            bUseAbility = false;
+        }
+    }
+    else
+    {
+        if (!FMath::IsNearlyEqual(AbilityValue, 1.f))
+        {
+            AbilityValue += GetWorld()->DeltaTimeSeconds / AbilityRechargeTime;
+            OnAbilityUpdate.Broadcast(AbilityValue);
+        }
+        if (AbilityValue > 1.f) AbilityValue = 1.f;
+    }
 }
