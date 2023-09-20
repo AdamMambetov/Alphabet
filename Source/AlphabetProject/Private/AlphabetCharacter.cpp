@@ -80,21 +80,29 @@ void AAlphabetCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (FMath::IsNearlyZero(GetCharacterMovement()->Velocity.Y / GetCharacterMovement()->GetMaxSpeed()))
+    float L_Acceleration = GetCharacterMovement()->GetCurrentAcceleration().Y * -1.f;
+
+    if (FMath::IsNearlyZero(L_Acceleration))
     {
-        if (!FMath::IsNearlyZero(Direction) && !GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+        Direction = UKismetMathLibrary::FInterpTo(Direction, FMath::IsNegativeFloat(Direction) ? -0.33f : 0.33f, DeltaSeconds, 5.f);
+    }
+    else
+    {
+        Direction = UKismetMathLibrary::FInterpTo(Direction, FMath::IsNegativeFloat(L_Acceleration) ? -1.f : 1.f, DeltaSeconds, 5.f);
+
+        if (!GetMesh()->GetAnimInstance()->IsAnyMontagePlaying() &&
+            (FMath::IsNegativeFloat(L_Acceleration) != (AttackComponent->CollisionLocation == EAttackCollisionLocation::Left)))
         {
-            auto NewCollisionLocation =
-                FMath::IsNegativeFloat(Direction) ? EAttackCollisionLocation::Left : EAttackCollisionLocation::Right;
-            FName WeaponLocationSocket = FMath::IsNegativeFloat(Direction) ? TEXT("LeftAttackSocket") : TEXT("RightAttackSocket");
+            auto NewCollisionLocation = FMath::IsNegativeFloat(L_Acceleration)  //
+                                            ? EAttackCollisionLocation::Left    //
+                                            : EAttackCollisionLocation::Right;  //
+            FName WeaponLocationSocket = FMath::IsNegativeFloat(L_Acceleration) //
+                                             ? TEXT("LeftAttackSocket")         //
+                                             : TEXT("RightAttackSocket");       //
 
             AttackComponent->CollisionLocation = NewCollisionLocation;
             WeaponCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponLocationSocket);
         }
-    }
-    else
-    {
-        Direction = GetCharacterMovement()->Velocity.Y / GetCharacterMovement()->GetMaxSpeed() * -1.f;
     }
 
     if (IsValid(HealthWidget))
@@ -112,7 +120,6 @@ void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AAlphabetCharacter::OnJump);
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AAlphabetCharacter::OnStopJumping);
     PlayerInputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AAlphabetCharacter::OnAttack);
-    PlayerInputComponent->BindAction(TEXT("Pause"), IE_Pressed, this, &AAlphabetCharacter::OnPause);
     PlayerInputComponent->BindAction(TEXT("Ability"), IE_Pressed, this, &AAlphabetCharacter::OnUseAbility);
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AAlphabetCharacter::OnMoveRight);
 }
@@ -156,12 +163,6 @@ void AAlphabetCharacter::OnAttack()
     if (GetCharacterMovement()->IsFalling()) return;
     AttackComponent->Attack();
     OnAttackBlueprint();
-}
-
-void AAlphabetCharacter::OnPause()
-{
-    OnPauseBlueprint();
-    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap"));
 }
 
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)

@@ -52,8 +52,6 @@ protected:
 
     virtual void OnAttack();
 
-    virtual void OnPause();
-
     virtual void OnUseAbility();
 
     UFUNCTION()
@@ -87,9 +85,6 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Attack"))
     void OnAttackBlueprint();
 
-    UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Pause"))
-    void OnPauseBlueprint();
-
     UFUNCTION(BlueprintImplementableEvent, Category = "Alphabet | Character", meta = (DisplayName = "On Stat Reached Zero"))
     void OnStatReachedZeroBlueprint(FStatInfo StatInfo);
 
@@ -107,7 +102,8 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Alphabet | Character", meta = (AllowPrivateAccess = "true"))
     UBoxComponent* WeaponCollision;
 
-    float Direction = 0.f;
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Alphabet | Character", meta = (AllowPrivateAccess = "true"))
+    float Direction = 0.33f;
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
