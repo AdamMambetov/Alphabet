@@ -121,6 +121,7 @@ void AAlphabetCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &AAlphabetCharacter::OnStopJumping);
     PlayerInputComponent->BindAction(TEXT("Attack"), IE_Pressed, this, &AAlphabetCharacter::OnAttack);
     PlayerInputComponent->BindAction(TEXT("Ability"), IE_Pressed, this, &AAlphabetCharacter::OnUseAbility);
+    PlayerInputComponent->BindAction(TEXT("Bomb"), IE_Pressed, this, &AAlphabetCharacter::OnUseBombPressed);
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AAlphabetCharacter::OnMoveRight);
 }
 
@@ -162,7 +163,8 @@ void AAlphabetCharacter::OnAttack()
 {
     OnAttackBlueprint();
 
-    !GetCharacterMovement()->IsFalling() ? AttackComponent->Attack() : AttackComponent->SpawnShotFire();
+    if (GetCharacterMovement()->IsFalling()) return;
+    AttackComponent->Attack();
 }
 
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)
@@ -222,4 +224,11 @@ void AAlphabetCharacter::OnAttackEnd(FAttackInfo AttackInfo)
 void AAlphabetCharacter::OnUseAbility()
 {
     AttackComponent->UseAbility();
+}
+
+void AAlphabetCharacter::OnUseBombPressed()
+{
+    if (!GetCharacterMovement()->IsFalling()) return;
+
+    AttackComponent->SpawnShotFire();
 }
