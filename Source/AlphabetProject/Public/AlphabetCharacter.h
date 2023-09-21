@@ -54,6 +54,8 @@ protected:
 
     virtual void OnUseAbility();
 
+    virtual void OnUseBombPressed();
+
     UFUNCTION()
     virtual void OnStatReachedZero(FStatInfo StatInfo);
 
