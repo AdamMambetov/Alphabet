@@ -141,9 +141,9 @@ void AAlphabetCharacter::OnMoveRight(float AxisValue)
 {
     OnMoveRightBlueprint(AxisValue);
 
-    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
-    if (!IsValid(PlayerState)) return;
-    if (!PlayerState->GetMovement()) return;
+    auto L_PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(L_PlayerState)) return;
+    if (!L_PlayerState->GetMovement()) return;
 
     const FVector WorldDirection = FVector(0.f, -1.f, 0.f);
     AddMovementInput(WorldDirection, AxisValue);
@@ -160,9 +160,9 @@ void AAlphabetCharacter::OnMoveRight(float AxisValue)
 
 void AAlphabetCharacter::OnAttack()
 {
-    if (GetCharacterMovement()->IsFalling()) return;
-    AttackComponent->Attack();
     OnAttackBlueprint();
+
+    !GetCharacterMovement()->IsFalling() ? AttackComponent->Attack() : AttackComponent->SpawnShotFire();
 }
 
 void AAlphabetCharacter::OnStatReachedZero(FStatInfo StatInfo)
@@ -206,17 +206,17 @@ void AAlphabetCharacter::OnDamageEnd()
 
 void AAlphabetCharacter::OnAttackStart(FAttackInfo AttackInfo)
 {
-    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
-    if (!IsValid(PlayerState)) return;
-    PlayerState->SetMovement(false);
+    auto L_PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(L_PlayerState)) return;
+    L_PlayerState->SetMovement(false);
     GetCharacterMovement()->Velocity = FVector(0.f);
 }
 
 void AAlphabetCharacter::OnAttackEnd(FAttackInfo AttackInfo)
 {
-    auto PlayerState = GetPlayerState<AAlphabetPlayerState>();
-    if (!IsValid(PlayerState)) return;
-    PlayerState->SetMovement(true);
+    auto L_PlayerState = GetPlayerState<AAlphabetPlayerState>();
+    if (!IsValid(L_PlayerState)) return;
+    L_PlayerState->SetMovement(true);
 }
 
 void AAlphabetCharacter::OnUseAbility()

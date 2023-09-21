@@ -13,6 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageEnd);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAbilityUse);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityUpdate, float, NewAbilityValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShotFireUpdate, float, NewShotFireValue);
 
 UCLASS()
 class ALPHABETPROJECT_API UAlphabetAttackComponent : public UAttackComponent
@@ -49,8 +50,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Alphabet | AttackComponent")
     void UseAbility();
 
+    UFUNCTION(BlueprintCallable, Category = "Alphabet | AttackComponent")
+    void SpawnShotFire();
+
 protected:
     void UpdateAbilityValue();
+    void UpdateShotFireValue();
 
     UFUNCTION()
     virtual void OnSaveComboEvent();
@@ -81,6 +86,9 @@ public:
     UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
     FAbilityUse OnAbilityUse;
 
+    UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Alphabet | AttackComponent")
+    FShotFireUpdate OnShotFireUpdate;
+
     // UAlphabetAttackComponent Dispatchers End
 
 public:
@@ -103,6 +111,15 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Alphabet | AttackComponent")
     float AbilityUseTime = 3.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Alphabet | AttackComponent")
+    TSubclassOf<AActor> ShotFireClass;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    float ShotFireValue = 0.f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Alphabet | AttackComponent")
+    float ShotFireRechargeTime = 3.f;
 
     // UAlphabetAttackComponent Variables End
 };

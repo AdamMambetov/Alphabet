@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 UAlphabetAttackComponent::UAlphabetAttackComponent()
 {
@@ -24,6 +25,7 @@ void UAlphabetAttackComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     UpdateAbilityValue();
+    UpdateShotFireValue();
 }
 
 void UAlphabetAttackComponent::AttackById(const FGameplayTag AttackId)
@@ -124,4 +126,39 @@ void UAlphabetAttackComponent::UpdateAbilityValue()
         }
         if (AbilityValue > 1.f) AbilityValue = 1.f;
     }
+}
+
+void UAlphabetAttackComponent::UpdateShotFireValue()
+{
+    if (!FMath::IsNearlyEqual(ShotFireValue, 1.f))
+    {
+        ShotFireValue += GetWorld()->DeltaTimeSeconds / ShotFireRechargeTime;
+        OnShotFireUpdate.Broadcast(ShotFireValue);
+    }
+    if (ShotFireValue > 1.f) ShotFireValue = 1.f;
+}
+
+void UAlphabetAttackComponent::SpawnShotFire()
+{
+    if (!IsValid(GetWorld()) || !ShotFireClass.Get() || !IsValid(GetOwner())) return;
+    if (!FMath::IsNearlyEqual(ShotFireValue, 1.f)) return;
+
+    const FVector L_LocationOffset{-50.f};
+
+    FTransform L_ShotFireTransform{
+        FRotator(-90.f, 0.f, 0.f),                                                            //
+        GetOwner()->GetActorLocation() + (GetOwner()->GetActorUpVector() * L_LocationOffset), //
+        FVector::OneVector                                                                    //
+    };
+
+    ESpawnActorCollisionHandlingMethod L_SpawnActorMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+    auto L_ShotFire = GetWorld()->SpawnActorDeferred<AActor>( //
+        ShotFireClass.Get(),                                  //
+        L_ShotFireTransform,                                  //
+        GetOwner(),                                           //
+        GetOwner()->Instigator,                               //
+        L_SpawnActorMethod);                                  //
+    UGameplayStatics::FinishSpawningActor(L_ShotFire, L_ShotFireTransform);
+    ShotFireValue = 0.f;
 }
