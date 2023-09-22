@@ -80,7 +80,9 @@ void AAlphabetCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    float L_Acceleration = GetCharacterMovement()->GetCurrentAcceleration().Y * -1.f;
+    float L_Acceleration = !GetPlayerState()->bIsABot                                      //
+                               ? GetCharacterMovement()->GetCurrentAcceleration().Y * -1.f //
+                               : GetCharacterMovement()->Velocity.Y * -1.f;                //
 
     if (FMath::IsNearlyZero(L_Acceleration))
     {
